@@ -32,18 +32,25 @@ public class Topic implements Serializable{
     @Column(nullable = false, length = 128)
     private String domain;
 
-    @Column(name="topic_type", nullable = false)
+    @Column(name="topic_type")
     private int topicType;
 
-    @Column(name="created_by", nullable = false)
+    @Column(name="created_by")
     private long createdBy;
 
-    @Column(name="created_at", columnDefinition = "DATETIME", nullable = false)
+    @Column(name="created_at", insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
+    public Topic() {}
 
-    public Topic(long id, String title, String url, String domain, int topicType,  long createdBy, Date createdAt) {
+    public Topic(String title, String url, String domain) {
+        this.title = title;
+        this.url = url;
+        this.domain = domain;
+    }
+
+    public Topic(long id, String title, String url, String domain, int topicType, long createdBy, Date createdAt) {
         this.id = id;
         this.title = title;
         this.url = url;

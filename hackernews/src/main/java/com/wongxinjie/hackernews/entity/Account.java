@@ -30,7 +30,7 @@ public class Account implements Serializable {
     @Column(nullable = false)
     private int status;
 
-    @Column(name="register_at", nullable = false, columnDefinition = "DATETIME")
+    @Column(name="register_at", insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date registerAt;
 

@@ -1,3 +1,4 @@
+/*
 CREATE TABLE IF NOT EXISTS `account` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `username` VARCHAR(64) NOT NULL,
@@ -9,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `account` (
     UNIQUE KEY `uk_email` (`email`),
     UNIQUE KEY `uk_username` (`username`)
 )ENGINE=InnoDB AUTO_INCREMENT=65487 DEFAULT CHARSET=utf8;
+*/
 
 CREATE TABLE IF NOT EXISTS `topic` (
     `id` INT NOT NULL AUTO_INCREMENT,
@@ -16,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `topic` (
     `url` VARCHAR(512) NOT NULL,
     `domain` VARCHAR(128) NOT NULL,
     `topic_type` TINYINT NOT NULL COMMENT '0 - new, 1 - show',
-    `created_by` INT NOT NULL COMMENT,
+    `created_by` INT NOT NULL,
     `created_at` DATETIME NOT NULL DEFAULT current_timestamp,
     PRIMARY KEY (id),
     UNIQUE KEY `uk_url` (`url`)

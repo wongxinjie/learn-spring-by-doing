@@ -13,5 +13,5 @@ public interface TopicService {
     Topic getTopicById(long topicId);
     long addTopic(Topic topic);
     long updateTopic(long topicId, Topic topic);
-    void deleteTopic(long topicId);
+    boolean deleteTopic(long topicId);
 }

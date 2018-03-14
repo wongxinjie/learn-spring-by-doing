@@ -25,7 +25,14 @@ public class TopicServiceImpl implements TopicService{
 
     @Override
     public Page<Topic> getTopicByPage(int page, int pageSize) {
-        return topicDao.findAll(PageRequest.of(page, pageSize));
+        if(page < 1) {
+            page = 1;
+        }
+        if(pageSize > 100) {
+            pageSize = 100;
+        }
+        page = page - 1;
+        return topicDao.findAll(new PageRequest(page, pageSize));
     }
 
     @Override
@@ -40,7 +47,8 @@ public class TopicServiceImpl implements TopicService{
         if(list.size() > 0) {
             return 0;
         }
-
+        topic.setCreatedBy(1);
+        topic.setTopicType(0);
         topicDao.save(topic);
         return  topic.getId();
     }
@@ -58,10 +66,12 @@ public class TopicServiceImpl implements TopicService{
     }
 
     @Override
-    public void deleteTopic(long topicId) {
+    public boolean deleteTopic(long topicId) {
         Topic topic = topicDao.getOne(topicId);
         if(topic != null) {
             topicDao.delete(topic);
+            return true;
         }
+        return false;
     }
 }

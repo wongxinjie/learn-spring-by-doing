@@ -27,7 +27,7 @@ public class Ask implements Serializable {
     @Column(nullable = false)
     private long createdBy;
 
-    @Column(name="created_at", nullable = false, columnDefinition = "DATETIME")
+    @Column(name="created_at", nullable = false, insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
