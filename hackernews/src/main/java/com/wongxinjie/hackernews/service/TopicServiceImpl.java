@@ -2,6 +2,8 @@ package com.wongxinjie.hackernews.service;
 
 import com.wongxinjie.hackernews.dao.TopicRepository;
 import com.wongxinjie.hackernews.entity.Topic;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +14,8 @@ import java.util.List;
 
 @Service
 public class TopicServiceImpl implements TopicService{
+
+    private static Logger log = LoggerFactory.getLogger(TopicServiceImpl.class);
 
     @Autowired
     private TopicRepository topicDao;
@@ -50,6 +54,8 @@ public class TopicServiceImpl implements TopicService{
         topic.setCreatedBy(1);
         topic.setTopicType(0);
         topicDao.save(topic);
+
+        log.info("User {} create topic with url {}", 1, topic.getUrl());
         return  topic.getId();
     }
 
@@ -70,6 +76,7 @@ public class TopicServiceImpl implements TopicService{
         Topic topic = topicDao.getOne(topicId);
         if(topic != null) {
             topicDao.delete(topic);
+            log.info("User {} remove topic id {}", topic.getCreatedBy(), topicId);
             return true;
         }
         return false;
