@@ -1,5 +1,4 @@
-/*
-CREATE TABLE IF NOT EXISTS `account` (
+CREATE TABLE IF NOT EXISTS `user` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `username` VARCHAR(64) NOT NULL,
     `email` VARCHAR(128) NOT NULL,
@@ -10,7 +9,6 @@ CREATE TABLE IF NOT EXISTS `account` (
     UNIQUE KEY `uk_email` (`email`),
     UNIQUE KEY `uk_username` (`username`)
 )ENGINE=InnoDB AUTO_INCREMENT=65487 DEFAULT CHARSET=utf8;
-*/
 
 CREATE TABLE IF NOT EXISTS `topic` (
     `id` INT NOT NULL AUTO_INCREMENT,
