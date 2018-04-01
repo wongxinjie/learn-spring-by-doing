@@ -76,7 +76,7 @@ public class LoginController {
         }
     }
 
-    @PutMapping("/update-profile")
+    @PutMapping("/my/profile")
     public ResponseEntity<ResultBean<Long>> updateProfile(@RequestBody UserVo user){
         ResultBean<Long> response = new ResultBean<>();
         Long userId = 65487L;
@@ -92,7 +92,7 @@ public class LoginController {
         }
     }
 
-    @GetMapping("/my-profile")
+    @GetMapping("/my/profile")
     public ResponseEntity<ResultBean<User>> getProfile() {
         ResultBean<User> response = new ResultBean<>();
         Long userId = 65487L;

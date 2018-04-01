@@ -1,17 +1,24 @@
 package com.wongxinjie.hackernews.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnJava;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 
 @Entity
@@ -25,12 +32,13 @@ public class User implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @Column(nullable = false, length = 64)
+    @Column(nullable = false, unique = true, length = 64)
     private String username;
 
-    @Column(nullable = false, length = 128)
+    @Column(nullable = false, unique = true, length = 128)
     private String email;
 
+    @JsonIgnore
     @Column(nullable = false, length = 256)
     private String password;
 
@@ -41,16 +49,24 @@ public class User implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date registerAt;
 
+    @JsonIgnore
+    @ManyToMany(targetEntity = Role.class, fetch = FetchType.EAGER)
+    @JoinTable(name = "user_role", joinColumns = {@JoinColumn(name="role_id")},
+            inverseJoinColumns = {@JoinColumn(name="user_id")})
+    private List<Role> roles;
+
     public User() {
 
     }
 
-    public User(long id , String username, String email, int status, Date registerAt) {
+    public User(long id, String username, String email, String password, int status, Date registerAt, List<Role> roles) {
         this.id = id;
         this.username = username;
         this.email = email;
+        this.password = password;
         this.status = status;
         this.registerAt = registerAt;
+        this.roles = roles;
     }
 
     public User(String username, String email, String password) {
@@ -107,4 +123,15 @@ public class User implements Serializable {
         return registerAt;
     }
 
+    public void setRegisterAt(Date registerAt) {
+        this.registerAt = registerAt;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
 }

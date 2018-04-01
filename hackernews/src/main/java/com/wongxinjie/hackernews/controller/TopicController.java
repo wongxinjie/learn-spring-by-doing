@@ -1,6 +1,5 @@
 package com.wongxinjie.hackernews.controller;
 
-import com.sun.corba.se.impl.oa.toa.TOA;
 import com.wongxinjie.hackernews.bean.PageResultBean;
 import com.wongxinjie.hackernews.bean.ResultBean;
 import com.wongxinjie.hackernews.entity.Topic;
