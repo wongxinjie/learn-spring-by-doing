@@ -3,8 +3,8 @@ package com.wongxinjie.hackernews.service;
 import com.wongxinjie.hackernews.common.UUIDUtil;
 import com.wongxinjie.hackernews.dao.UserRepository;
 import com.wongxinjie.hackernews.entity.User;
-import com.wongxinjie.hackernews.exception.HNErrorCode;
-import com.wongxinjie.hackernews.exception.HNUserException;
+import com.wongxinjie.hackernews.exception.ErrorCodeEnum;
+import com.wongxinjie.hackernews.exception.UserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +21,12 @@ public class LoginServiceImpl implements LoginService{
     private UserRepository userDao;
 
     @Override
-    public Long login(String email, String password) throws HNUserException {
+    public Long login(String email, String password) throws UserException {
         User row = userDao.findFirstByEmail(email);
         String encryPassword = password;
 
         if(row == null|| !row.getPassword().equals(encryPassword)) {
-            throw new HNUserException(HNErrorCode.userNotExistsOrPasswordIncoreect);
+            throw new UserException(ErrorCodeEnum.userNotExistsOrPasswordIncoreect);
         }
         return row.getId();
     }
@@ -37,10 +37,10 @@ public class LoginServiceImpl implements LoginService{
     }
 
     @Override
-    public Long register(String email, String password) throws HNUserException {
+    public Long register(String email, String password) throws UserException {
         User row = userDao.findFirstByEmail(email);
         if(row != null) {
-            throw new HNUserException(HNErrorCode.emailExists);
+            throw new UserException(ErrorCodeEnum.emailExists);
         }
 
         String entryPassword = password;
@@ -52,14 +52,14 @@ public class LoginServiceImpl implements LoginService{
     }
 
     @Override
-    public Long resetPassword(Long userId, String password, String passwordToSet) throws HNUserException {
+    public Long resetPassword(Long userId, String password, String passwordToSet) throws UserException {
         Optional<User> optional = userDao.findById(userId);
         if(optional.isPresent()) {
             User model = optional.get();
 
             String entryPassword = password;
             if(!model.getPassword().equals(entryPassword)) {
-                throw new HNUserException(HNErrorCode.passwordIncorrect);
+                throw new UserException(ErrorCodeEnum.passwordIncorrect);
             }
 
             String passwordToUpdate = passwordToSet;
@@ -67,16 +67,16 @@ public class LoginServiceImpl implements LoginService{
             userDao.save(model);
             return model.getId();
         } else {
-            throw new HNUserException(HNErrorCode.notFound);
+            throw new UserException(ErrorCodeEnum.notFound);
         }
 
     }
 
     @Override
-    public Long updateProfile(Long userId, String username) throws HNUserException {
+    public Long updateProfile(Long userId, String username) throws UserException {
         Boolean exists = userDao.existsByIdNotAndUsername(userId,  username);
         if(exists) {
-            throw new HNUserException(HNErrorCode.nicknameExists);
+            throw new UserException(ErrorCodeEnum.nicknameExists);
         }
 
         Optional<User> optional = userDao.findById(userId);
@@ -86,15 +86,15 @@ public class LoginServiceImpl implements LoginService{
             userDao.save(model);
             return model.getId();
         } else {
-            throw new HNUserException(HNErrorCode.notFound);
+            throw new UserException(ErrorCodeEnum.notFound);
         }
     }
 
     @Override
-    public User getUserProfile(Long userId) throws HNUserException {
+    public User getUserProfile(Long userId) throws UserException {
         Optional<User> optional = userDao.findById(userId);
         if(!optional.isPresent()) {
-            throw new HNUserException(HNErrorCode.notFound);
+            throw new UserException(ErrorCodeEnum.notFound);
         }
         return optional.get();
     }

@@ -1,6 +1,6 @@
 package com.wongxinjie.hackernews.exception;
 
-public enum HNErrorCode {
+public enum ErrorCodeEnum {
 
     // HTTP common error code
     notFound(404, "resource not found"),
@@ -15,7 +15,7 @@ public enum HNErrorCode {
     private int code;
     private String desc;
 
-    private HNErrorCode(int code, String desc) {
+    private ErrorCodeEnum(int code, String desc) {
         this.code = code;
         this.desc = desc;
     }

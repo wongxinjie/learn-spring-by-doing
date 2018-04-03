@@ -4,7 +4,7 @@ package com.wongxinjie.hackernews.controller;
 import com.wongxinjie.hackernews.bean.ResultBean;
 import com.wongxinjie.hackernews.bean.vo.UserVo;
 import com.wongxinjie.hackernews.entity.User;
-import com.wongxinjie.hackernews.exception.HNUserException;
+import com.wongxinjie.hackernews.exception.UserException;
 import com.wongxinjie.hackernews.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,7 +30,7 @@ public class LoginController {
             Long userId = loginService.login(user.getEmail(), user.getPassword());
             response.setData(userId);
             return ResponseEntity.ok(response);
-        } catch (HNUserException e) {
+        } catch (UserException e) {
             response.setCode(e.getCode());
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
@@ -45,7 +45,7 @@ public class LoginController {
             Long userId = loginService.register(user.getEmail(), user.getPassword());
             response.setData(userId);
             return ResponseEntity.ok(response);
-        } catch (HNUserException e) {
+        } catch (UserException e) {
             response.setCode(e.getCode());
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
@@ -69,7 +69,7 @@ public class LoginController {
             Long uid = loginService.resetPassword(userId, user.getPassword(), user.getUsername());
             response.setData(uid);
             return ResponseEntity.ok(response);
-        } catch (HNUserException e) {
+        } catch (UserException e) {
             response.setCode(e.getCode());
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
@@ -85,7 +85,7 @@ public class LoginController {
             Long uid = loginService.updateProfile(userId, user.getUsername());
             response.setData(uid);
             return ResponseEntity.ok(response);
-        } catch (HNUserException e) {
+        } catch (UserException e) {
             response.setCode(e.getCode());
             response.setMessage(e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);

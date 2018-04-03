@@ -1,7 +1,7 @@
 package com.wongxinjie.hackernews.service;
 
 import com.wongxinjie.hackernews.entity.User;
-import com.wongxinjie.hackernews.exception.HNUserException;
+import com.wongxinjie.hackernews.exception.UserException;
 
 public interface LoginService {
 
@@ -10,9 +10,9 @@ public interface LoginService {
      * @param email
      * @param password
      * @return
-     * @throws HNUserException
+     * @throws UserException
      */
-    Long login(String email, String password) throws HNUserException;
+    Long login(String email, String password) throws UserException;
 
     /**
      *
@@ -26,9 +26,9 @@ public interface LoginService {
      * @param email
      * @param password
      * @return
-     * @throws HNUserException
+     * @throws UserException
      */
-    Long register(String email, String password) throws HNUserException;
+    Long register(String email, String password) throws UserException;
 
     /**
      *
@@ -36,24 +36,24 @@ public interface LoginService {
      * @param password
      * @param passwordToSet
      * @return
-     * @throws HNUserException
+     * @throws UserException
      */
-    Long resetPassword(Long userId, String password, String passwordToSet) throws HNUserException;
+    Long resetPassword(Long userId, String password, String passwordToSet) throws UserException;
 
     /**
      *
      * @param userId
      * @param nickname
      * @return
-     * @throws HNUserException
+     * @throws UserException
      */
-    Long updateProfile(Long userId, String nickname) throws HNUserException;
+    Long updateProfile(Long userId, String nickname) throws UserException;
 
     /**
      *
      * @param userId
      * @return
-     * @throws HNUserException
+     * @throws UserException
      */
-    User getUserProfile(Long userId) throws HNUserException;
+    User getUserProfile(Long userId) throws UserException;
 }

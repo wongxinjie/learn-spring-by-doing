@@ -1,18 +1,18 @@
 package com.wongxinjie.hackernews.exception;
 
-public class HNUserException extends RuntimeException{
+public class UserException extends BaseException {
 
     private static final long serialVersionUID = 1L;
 
     private int code;
     private String message;
 
-    public HNUserException(int code, String message) {
+    public UserException(int code, String message) {
         this.code = code;
         this.message = message;
     }
 
-    public HNUserException(HNErrorCode error) {
+    public UserException(ErrorCodeEnum error) {
         this.code = error.getCode();
         this.message = error.getDesc();
     }
