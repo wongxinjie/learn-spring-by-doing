@@ -2,7 +2,9 @@ package com.wongxinjie.hackernews.controller;
 
 
 import com.wongxinjie.hackernews.bean.ResultBean;
-import com.wongxinjie.hackernews.bean.vo.UserVo;
+import com.wongxinjie.hackernews.bean.vo.UserRequestVO;
+import com.wongxinjie.hackernews.bean.vo.UserResponseVO;
+import com.wongxinjie.hackernews.common.CookieUtils;
 import com.wongxinjie.hackernews.entity.User;
 import com.wongxinjie.hackernews.exception.UserException;
 import com.wongxinjie.hackernews.service.LoginService;
@@ -16,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 @RestController
 @RequestMapping("/v1.0")
 public class LoginController {
@@ -24,22 +29,25 @@ public class LoginController {
     LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<ResultBean<Long>> login(@RequestBody UserVo user) {
-        ResultBean<Long> response = new ResultBean<>();
+    public ResponseEntity<ResultBean<UserResponseVO>> login(@RequestBody UserRequestVO user, HttpServletRequest request, HttpServletResponse response) {
+        ResultBean<UserResponseVO> payload = new ResultBean<>();
         try {
-            Long userId = loginService.login(user.getEmail(), user.getPassword());
-            response.setData(userId);
-            return ResponseEntity.ok(response);
+            UserResponseVO responseVO= loginService.login(user.getEmail(), user.getPassword());
+            // login successfully, set cookies
+            CookieUtils.setCookie(request, response, "ticket", responseVO.getTicket());
+
+            payload.setData(responseVO);
+            return ResponseEntity.ok(payload);
         } catch (UserException e) {
-            response.setCode(e.getCode());
-            response.setMessage(e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+            payload.setCode(e.getCode());
+            payload.setMessage(e.getMessage());
+            return new ResponseEntity<>(payload, HttpStatus.FORBIDDEN);
         }
     }
 
 
     @PostMapping("/register")
-    public ResponseEntity<ResultBean<Long>> register(@RequestBody UserVo user) {
+    public ResponseEntity<ResultBean<Long>> register(@RequestBody UserRequestVO user) {
         ResultBean<Long> response = new ResultBean<>();
         try {
             Long userId = loginService.register(user.getEmail(), user.getPassword());
@@ -62,7 +70,7 @@ public class LoginController {
     }
 
     @PutMapping("/reset-password")
-    public ResponseEntity<ResultBean<Long>> resetPassword(@RequestBody UserVo user) {
+    public ResponseEntity<ResultBean<Long>> resetPassword(@RequestBody UserRequestVO user) {
         ResultBean<Long> response = new ResultBean<>();
         Long userId = 65487L;
         try {
@@ -77,7 +85,7 @@ public class LoginController {
     }
 
     @PutMapping("/my/profile")
-    public ResponseEntity<ResultBean<Long>> updateProfile(@RequestBody UserVo user){
+    public ResponseEntity<ResultBean<Long>> updateProfile(@RequestBody UserRequestVO user){
         ResultBean<Long> response = new ResultBean<>();
         Long userId = 65487L;
 

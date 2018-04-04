@@ -1,11 +1,14 @@
 package com.wongxinjie.hackernews.config.security;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-public class SessionUser implements UserDetails {
+public class SessionUser implements UserDetails, Serializable {
+
+    private static final Long serialVersionUID = 1L;
 
     private final Long id;
     private final String username;

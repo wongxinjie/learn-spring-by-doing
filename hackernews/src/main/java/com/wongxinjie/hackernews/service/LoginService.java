@@ -1,5 +1,6 @@
 package com.wongxinjie.hackernews.service;
 
+import com.wongxinjie.hackernews.bean.vo.UserResponseVO;
 import com.wongxinjie.hackernews.entity.User;
 import com.wongxinjie.hackernews.exception.UserException;
 
@@ -12,7 +13,7 @@ public interface LoginService {
      * @return
      * @throws UserException
      */
-    Long login(String email, String password) throws UserException;
+    UserResponseVO login(String email, String password) throws UserException;
 
     /**
      *

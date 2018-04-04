@@ -1,7 +1,8 @@
-package com.wongxinjie.hackernews.service;
+package com.wongxinjie.hackernews.service.impl;
 
 import com.wongxinjie.hackernews.dao.TopicRepository;
 import com.wongxinjie.hackernews.entity.Topic;
+import com.wongxinjie.hackernews.service.TopicService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class TopicServiceImpl implements TopicService{
+public class TopicServiceImpl implements TopicService {
 
     private static Logger log = LoggerFactory.getLogger(TopicServiceImpl.class);
 

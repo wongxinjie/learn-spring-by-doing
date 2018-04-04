@@ -7,21 +7,21 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
-public class UserVo {
+public class UserRequestVO {
 
     private String email;
     private String username;
     private String password;
     private String updatedPassword;
 
-    public UserVo(String email, String nickname, String password, String updatedPassword) {
+    public UserRequestVO(String email, String nickname, String password, String updatedPassword) {
         this.email = email;
         this.username = nickname;
         this.password = password;
         this.updatedPassword = updatedPassword;
     }
 
-    public UserVo() {
+    public UserRequestVO() {
     }
 
     public String getEmail() {
