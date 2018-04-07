@@ -34,6 +34,7 @@ public class LoginController {
         try {
             UserResponseVO responseVO= loginService.login(user.getEmail(), user.getPassword());
             // login successfully, set cookies
+            CookieUtils.deleteCookie(request, response);
             CookieUtils.setCookie(request, response, "ticket", responseVO.getTicket());
 
             payload.setData(responseVO);

@@ -34,9 +34,8 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public UserResponseVO login(String email, String password) throws UserException {
         User row = userDao.findFirstByEmail(email);
-        String encryPassword = passwordEncoder.encode(password);
 
-        if(row == null|| !row.getPassword().equals(encryPassword)) {
+        if(row == null|| !passwordEncoder.matches(password, row.getPassword())) {
             throw new UserException(ErrorCodeEnum.userNotExistsOrPasswordIncoreect);
         }
 
@@ -73,8 +72,7 @@ public class LoginServiceImpl implements LoginService {
         if(optional.isPresent()) {
             User model = optional.get();
 
-            String entryPassword = passwordEncoder.encode(password);
-            if(!model.getPassword().equals(entryPassword)) {
+            if(!passwordEncoder.matches(password, model.getPassword())) {
                 throw new UserException(ErrorCodeEnum.passwordIncorrect);
             }
 

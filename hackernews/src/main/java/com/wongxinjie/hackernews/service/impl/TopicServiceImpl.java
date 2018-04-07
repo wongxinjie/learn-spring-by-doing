@@ -47,7 +47,7 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public synchronized long addTopic(Topic topic) {
+    public long addTopic(Topic topic) {
         List<Topic> list = topicDao.findByUrl(topic.getUrl());
         if(list.size() > 0) {
             return 0;

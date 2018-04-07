@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
@@ -21,10 +23,17 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String key) throws UsernameNotFoundException {
         User user = redisService.getObject(key);
+        /*
         if(user == null) {
             throw new UsernameNotFoundException(String.format("No user found with cookie '%s'.", key));
         } else {
             return UserFactory.create(user);
         }
+        */
+        System.out.println(user);
+        if(user != null) {
+            return UserFactory.create(user);
+        }
+        return null;
     }
 }
