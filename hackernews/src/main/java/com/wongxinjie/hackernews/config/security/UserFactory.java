@@ -1,5 +1,6 @@
 package com.wongxinjie.hackernews.config.security;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,11 +15,13 @@ public class UserFactory {
     }
 
     static SessionUser create(User user) {
+        String[] roles = {"USER"};
         return new SessionUser(
                 user.getId(),
                 user.getUsername(),
                 user.getPassword(),
-                mapToGrantedAuthorities(user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
+                mapToGrantedAuthorities(Arrays.asList(roles))
+                // mapToGrantedAuthorities(user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
         );
     }
 

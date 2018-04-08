@@ -5,12 +5,15 @@ import com.wongxinjie.hackernews.bean.ResultBean;
 import com.wongxinjie.hackernews.bean.vo.UserRequestVO;
 import com.wongxinjie.hackernews.bean.vo.UserResponseVO;
 import com.wongxinjie.hackernews.common.CookieUtils;
+import com.wongxinjie.hackernews.config.security.SessionUser;
 import com.wongxinjie.hackernews.entity.User;
 import com.wongxinjie.hackernews.exception.UserException;
 import com.wongxinjie.hackernews.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/v1.0")
@@ -63,19 +67,21 @@ public class LoginController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<ResultBean<Boolean>> logout() {
-        Long userId = 65487L;
-        Boolean success = loginService.logout(userId);
+    public ResponseEntity<ResultBean<Boolean>> logout(Authentication authentication) {
+        SessionUser principal = (SessionUser) authentication.getPrincipal();
+
+        Boolean success = loginService.logout(principal.getId());
         ResultBean<Boolean> response = new ResultBean<>(success);
         return ResponseEntity.ok(response);
     }
 
     @PutMapping("/reset-password")
-    public ResponseEntity<ResultBean<Long>> resetPassword(@RequestBody UserRequestVO user) {
+    public ResponseEntity<ResultBean<Long>> resetPassword(@RequestBody UserRequestVO user, Authentication authentication) {
         ResultBean<Long> response = new ResultBean<>();
-        Long userId = 65487L;
+        SessionUser principal = (SessionUser) authentication.getPrincipal();
+
         try {
-            Long uid = loginService.resetPassword(userId, user.getPassword(), user.getUsername());
+            Long uid = loginService.resetPassword(principal.getId(), user.getPassword(), user.getUsername());
             response.setData(uid);
             return ResponseEntity.ok(response);
         } catch (UserException e) {
@@ -85,13 +91,13 @@ public class LoginController {
         }
     }
 
-    @PutMapping("/my/profile")
-    public ResponseEntity<ResultBean<Long>> updateProfile(@RequestBody UserRequestVO user){
-        ResultBean<Long> response = new ResultBean<>();
-        Long userId = 65487L;
+    @PutMapping("/me/profile")
+    public ResponseEntity<ResultBean<Long>> updateProfile(@RequestBody UserRequestVO user, Authentication authentication){
+        SessionUser pricipal = (SessionUser) authentication.getPrincipal();
 
+        ResultBean<Long> response = new ResultBean<>();
         try {
-            Long uid = loginService.updateProfile(userId, user.getUsername());
+            Long uid = loginService.updateProfile(pricipal.getId(), user.getUsername());
             response.setData(uid);
             return ResponseEntity.ok(response);
         } catch (UserException e) {
@@ -101,11 +107,12 @@ public class LoginController {
         }
     }
 
-    @GetMapping("/my/profile")
-    public ResponseEntity<ResultBean<User>> getProfile() {
+    @GetMapping("/me/profile")
+    public ResponseEntity<ResultBean<User>> getProfile(Authentication authentication) {
         ResultBean<User> response = new ResultBean<>();
-        Long userId = 65487L;
-        User user = loginService.getUserProfile(userId);
+        SessionUser principal = (SessionUser) authentication.getPrincipal();
+
+        User user = loginService.getUserProfile(principal.getId());
         response.setData(user);
         return ResponseEntity.ok(response);
     }

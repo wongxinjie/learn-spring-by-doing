@@ -30,7 +30,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return UserFactory.create(user);
         }
         */
-        System.out.println(user);
         if(user != null) {
             return UserFactory.create(user);
         }

@@ -30,6 +30,7 @@ public class UserAuthenticationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String ticket = CookieUtils.getCookieValue(httpServletRequest, "ticket");
+        log.debug("user ticket :" + ticket);
         if(ticket != null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(ticket);
 

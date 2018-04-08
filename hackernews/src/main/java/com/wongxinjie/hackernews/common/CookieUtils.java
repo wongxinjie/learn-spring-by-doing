@@ -35,11 +35,13 @@ public class CookieUtils {
 
     public static void deleteCookie(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
-        for(Cookie cookie: cookies) {
-            cookie.setValue(null);
-            cookie.setMaxAge(0);
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
+        if(cookies != null) {
+            for(Cookie cookie: cookies) {
+                cookie.setValue(null);
+                cookie.setMaxAge(0);
+                cookie.setHttpOnly(true);
+                response.addCookie(cookie);
+            }
         }
     }
 }
