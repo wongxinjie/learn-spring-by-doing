@@ -1,14 +1,13 @@
 package com.wongxinjie.hackernews.service.impl;
 
 import com.wongxinjie.hackernews.bean.vo.UserResponseVO;
-import com.wongxinjie.hackernews.common.CookieUtils;
 import com.wongxinjie.hackernews.common.UUIDUtils;
-import com.wongxinjie.hackernews.dao.UserRepository;
+import com.wongxinjie.hackernews.repository.SessionRepository;
+import com.wongxinjie.hackernews.repository.UserRepository;
 import com.wongxinjie.hackernews.entity.User;
 import com.wongxinjie.hackernews.exception.ErrorCodeEnum;
 import com.wongxinjie.hackernews.exception.UserException;
 import com.wongxinjie.hackernews.service.LoginService;
-import com.wongxinjie.hackernews.service.RedisService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,34 +25,34 @@ public class LoginServiceImpl implements LoginService {
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    private UserRepository userDao;
+    private UserRepository userRepository;
 
     @Autowired
-    private RedisService<User> redisService;
+    private SessionRepository sessionRepository;
+
 
     @Override
     public UserResponseVO login(String email, String password) throws UserException {
-        User row = userDao.findFirstByEmail(email);
+        User row = userRepository.findFirstByEmail(email);
 
         if(row == null|| !passwordEncoder.matches(password, row.getPassword())) {
             throw new UserException(ErrorCodeEnum.userNotExistsOrPasswordIncoreect);
         }
 
-        String ticket = "HN-" + UUIDUtils.uuid();
-        redisService.setexObject(ticket, row, 3600);
+        String session = sessionRepository.create(row);
 
-        UserResponseVO userResponseVO = new UserResponseVO(row.getId(), row.getUsername(), ticket);
+        UserResponseVO userResponseVO = new UserResponseVO(row.getId(), row.getUsername(), session);
         return userResponseVO;
     }
 
     @Override
-    public boolean logout(Long userId) {
-        return true;
+    public boolean logout(String ticket) {
+        return sessionRepository.remove(ticket);
     }
 
     @Override
     public Long register(String email, String password) throws UserException {
-        User row = userDao.findFirstByEmail(email);
+        User row = userRepository.findFirstByEmail(email);
         if(row != null) {
             throw new UserException(ErrorCodeEnum.emailExists);
         }
@@ -61,14 +60,14 @@ public class LoginServiceImpl implements LoginService {
         String entryPassword = passwordEncoder.encode(password);
         String userName = "u_" + UUIDUtils.shortUUID();
         User model = new User(userName, email, entryPassword);
-        userDao.save(model);
+        userRepository.save(model);
 
         return model.getId();
     }
 
     @Override
     public Long resetPassword(Long userId, String password, String passwordToSet) throws UserException {
-        Optional<User> optional = userDao.findById(userId);
+        Optional<User> optional = userRepository.findById(userId);
         if(optional.isPresent()) {
             User model = optional.get();
 
@@ -78,7 +77,7 @@ public class LoginServiceImpl implements LoginService {
 
             String passwordToUpdate = passwordEncoder.encode(passwordToSet);
             model.setPassword(passwordToUpdate);
-            userDao.save(model);
+            userRepository.save(model);
             return model.getId();
         } else {
             throw new UserException(ErrorCodeEnum.notFound);
@@ -88,16 +87,16 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public Long updateProfile(Long userId, String username) throws UserException {
-        Boolean exists = userDao.existsByIdNotAndUsername(userId,  username);
+        Boolean exists = userRepository.existsByIdNotAndUsername(userId,  username);
         if(exists) {
             throw new UserException(ErrorCodeEnum.nicknameExists);
         }
 
-        Optional<User> optional = userDao.findById(userId);
+        Optional<User> optional = userRepository.findById(userId);
         if(optional.isPresent()) {
             User model = optional.get();
             model.setUsername(username);
-            userDao.save(model);
+            userRepository.save(model);
             return model.getId();
         } else {
             throw new UserException(ErrorCodeEnum.notFound);
@@ -106,7 +105,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public User getUserProfile(Long userId) throws UserException {
-        Optional<User> optional = userDao.findById(userId);
+        Optional<User> optional = userRepository.findById(userId);
         if(!optional.isPresent()) {
             throw new UserException(ErrorCodeEnum.notFound);
         }

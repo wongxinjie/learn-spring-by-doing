@@ -17,10 +17,10 @@ public interface LoginService {
 
     /**
      *
-     * @param userId
+     * @param ticket
      * @return
      */
-    boolean logout(Long userId);
+    boolean logout(String ticket);
 
     /**
      *

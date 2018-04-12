@@ -1,7 +1,8 @@
 package com.wongxinjie.hackernews.config.security;
 
 import com.wongxinjie.hackernews.entity.User;
-import com.wongxinjie.hackernews.service.RedisService;
+import com.wongxinjie.hackernews.repository.SessionRepository;
+import org.h2.engine.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    RedisService<User> redisService;
+    SessionRepository sessionRepository;
 
     /**
      * find account by user's registered email
@@ -22,14 +23,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String key) throws UsernameNotFoundException {
-        User user = redisService.getObject(key);
-        /*
-        if(user == null) {
-            throw new UsernameNotFoundException(String.format("No user found with cookie '%s'.", key));
-        } else {
-            return UserFactory.create(user);
-        }
-        */
+        User user = sessionRepository.getUserFromSession(key);
+
         if(user != null) {
             return UserFactory.create(user);
         }

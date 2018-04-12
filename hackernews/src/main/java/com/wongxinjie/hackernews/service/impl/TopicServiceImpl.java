@@ -1,6 +1,6 @@
 package com.wongxinjie.hackernews.service.impl;
 
-import com.wongxinjie.hackernews.dao.TopicRepository;
+import com.wongxinjie.hackernews.repository.TopicRepository;
 import com.wongxinjie.hackernews.entity.Topic;
 import com.wongxinjie.hackernews.service.TopicService;
 import org.slf4j.Logger;
@@ -19,12 +19,12 @@ public class TopicServiceImpl implements TopicService {
     private static Logger log = LoggerFactory.getLogger(TopicServiceImpl.class);
 
     @Autowired
-    private TopicRepository topicDao;
+    private TopicRepository topicRepository;
 
     @Override
     public List<Topic> getAllTopic() {
         List<Topic> topics = new ArrayList<>();
-        topicDao.findAll().forEach(e -> topics.add(e));
+        topicRepository.findAll().forEach(e -> topics.add(e));
         return topics;
     }
 
@@ -37,24 +37,24 @@ public class TopicServiceImpl implements TopicService {
             pageSize = 100;
         }
         page = page - 1;
-        return topicDao.findAll(new PageRequest(page, pageSize));
+        return topicRepository.findAll(new PageRequest(page, pageSize));
     }
 
     @Override
     public Topic getTopicById(long topicId) {
-        Topic topic = topicDao.findById(topicId).get();
+        Topic topic = topicRepository.findById(topicId).get();
         return topic;
     }
 
     @Override
     public long addTopic(Topic topic) {
-        List<Topic> list = topicDao.findByUrl(topic.getUrl());
+        List<Topic> list = topicRepository.findByUrl(topic.getUrl());
         if(list.size() > 0) {
             return 0;
         }
         topic.setCreatedBy(1);
         topic.setTopicType(0);
-        topicDao.save(topic);
+        topicRepository.save(topic);
 
         log.info("User {} create topic with url {}", 1, topic.getUrl());
         return  topic.getId();
@@ -62,21 +62,21 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public long updateTopic(long topicId, Topic topic) {
-        Topic t = topicDao.findById(topicId).get();
+        Topic t = topicRepository.findById(topicId).get();
         if(t == null) {
             return 0;
         }
 
         topic.setId(topicId);
-        topicDao.save(topic);
+        topicRepository.save(topic);
         return topicId;
     }
 
     @Override
     public boolean deleteTopic(long topicId) {
-        Topic topic = topicDao.getOne(topicId);
+        Topic topic = topicRepository.getOne(topicId);
         if(topic != null) {
-            topicDao.delete(topic);
+            topicRepository.delete(topic);
             log.info("User {} remove topic id {}", topic.getCreatedBy(), topicId);
             return true;
         }

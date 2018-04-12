@@ -1,4 +1,4 @@
-package com.wongxinjie.hackernews.dao;
+package com.wongxinjie.hackernews.repository;
 
 import com.wongxinjie.hackernews.entity.Topic;
 import org.springframework.data.jpa.repository.JpaRepository;
