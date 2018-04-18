@@ -25,23 +25,22 @@ public class CookieUtils {
         if(cookie == null) {
             cookie = new Cookie(name, value);
             cookie.setHttpOnly(true);
-            cookie.setPath("/");
+            // cookie.setSecure(true);
             cookie.setMaxAge(maxAge);
         } else {
             cookie.setValue(value);
+            cookie.setMaxAge(maxAge);
         }
         response.addCookie(cookie);
     }
 
-    public static void deleteCookie(HttpServletRequest request, HttpServletResponse response) {
-        Cookie[] cookies = request.getCookies();
-        if(cookies != null) {
-            for(Cookie cookie: cookies) {
-                cookie.setValue(null);
-                cookie.setMaxAge(0);
-                cookie.setHttpOnly(true);
-                response.addCookie(cookie);
-            }
+    public static void deleteCookie(HttpServletRequest request, HttpServletResponse response, String name) {
+        Cookie cookie = WebUtils.getCookie(request, name);
+        if (cookie != null) {
+            cookie.setValue(null);
+            cookie.setMaxAge(0);
+            cookie.setHttpOnly(true);
+            response.addCookie(cookie);
         }
     }
 }

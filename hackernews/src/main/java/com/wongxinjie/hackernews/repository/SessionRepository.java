@@ -3,11 +3,13 @@ package com.wongxinjie.hackernews.repository;
 import com.wongxinjie.hackernews.common.UUIDUtils;
 import com.wongxinjie.hackernews.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class SessionRepository {
@@ -17,10 +19,10 @@ public class SessionRepository {
     private long expiredSeconds = 3600;
 
     @Autowired
-    RedisTemplate<String, User> redisTemplate;
+    RedisTemplate<Object, Object> redisTemplate;
 
     @Resource(name = "redisTemplate")
-    ValueOperations<String, User> valueOperations;
+    HashOperations<String, Object, Object> hashOperations;
 
     private String genStoreKey(String key) {
         return prefix + key;
@@ -29,13 +31,15 @@ public class SessionRepository {
     public String create(User user) {
         String sessionId = "HN-" + UUIDUtils.uuid();
         String key = genStoreKey(sessionId);
-        valueOperations.set(key, user, expiredSeconds);
+        hashOperations.put(key, sessionId, user);
+        redisTemplate.expire(key, expiredSeconds, TimeUnit.SECONDS);
         return sessionId;
     }
 
     public User getUserFromSession(String sessionId) {
         String key = genStoreKey(sessionId);
-        User user = valueOperations.get(key);
+
+        User user = (User) hashOperations.get(key, sessionId);
         return user;
     }
 

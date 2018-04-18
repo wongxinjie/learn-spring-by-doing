@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.wongxinjie.hackernews.entity.Role;
 import com.wongxinjie.hackernews.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,7 +20,6 @@ public class UserFactory {
                 user.getUsername(),
                 user.getPassword(),
                 mapToGrantedAuthorities(Arrays.asList(roles))
-                // mapToGrantedAuthorities(user.getRoles().stream().map(Role::getName).collect(Collectors.toList()))
         );
     }
 

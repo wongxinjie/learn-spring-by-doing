@@ -37,8 +37,6 @@ public class LoginController {
         ResultBean<UserResponseVO> payload = new ResultBean<>();
         try {
             UserResponseVO responseVO= loginService.login(user.getEmail(), user.getPassword());
-            // login successfully, set cookies
-            CookieUtils.deleteCookie(request, response);
             CookieUtils.setCookie(request, response, "ticket", responseVO.getTicket());
 
             payload.setData(responseVO);
@@ -67,10 +65,11 @@ public class LoginController {
 
 
     @PostMapping("/logout")
-    public ResponseEntity<ResultBean<Boolean>> logout(Authentication authentication) {
-        SessionUser principal = (SessionUser) authentication.getPrincipal();
+    public ResponseEntity<ResultBean<Boolean>> logout(HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+        String ticket = CookieUtils.getCookieValue(servletRequest, "ticket");
+        Boolean success = loginService.logout(ticket);
 
-        Boolean success = loginService.logout(principal.getId());
+        CookieUtils.deleteCookie(servletRequest, servletResponse, "ticket");
         ResultBean<Boolean> response = new ResultBean<>(success);
         return ResponseEntity.ok(response);
     }
