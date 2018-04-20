@@ -14,6 +14,6 @@ public interface TopicService {
 
     TopicDto getTopicById(long topicId);
     long addTopic(TopicVo topicVo, Long userId, int topicType);
-    long updateTopic(long topicId, TopicVo topicVo);
+    long updateTopic(long topicId, TopicVo topicVo, long userId);
     boolean deleteTopic(long topicId, long userId);
 }

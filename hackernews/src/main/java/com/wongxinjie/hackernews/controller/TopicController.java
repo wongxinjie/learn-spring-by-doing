@@ -4,8 +4,10 @@ import com.wongxinjie.hackernews.bean.PageResultBean;
 import com.wongxinjie.hackernews.bean.ResultBean;
 import com.wongxinjie.hackernews.bean.dto.TopicDto;
 import com.wongxinjie.hackernews.bean.vo.TopicVo;
+import com.wongxinjie.hackernews.config.security.SessionUser;
 import com.wongxinjie.hackernews.entity.Topic;
 import com.wongxinjie.hackernews.service.TopicService;
+import org.h2.engine.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -55,7 +57,10 @@ public class TopicController {
 
     @PostMapping(value = "v1.0/topics", produces = "application/json")
     public ResponseEntity<ResultBean<Long>> createTopic(@RequestBody TopicVo topicVo, Authentication authentication) {
-        long topicId = topicService.addTopic(topicVo);
+        SessionUser user = (SessionUser) authentication.getPrincipal();
+        int topicType = 0;
+
+        long topicId = topicService.addTopic(topicVo, user.getId(), topicType);
 
         ResultBean<Long> response = new ResultBean<>(topicId);
         if(topicId == 0) {
@@ -67,8 +72,9 @@ public class TopicController {
     }
 
     @PutMapping(value = "v1.0/topics/{id}", produces = "application/json")
-    public ResponseEntity<ResultBean<Long>> updateTopic(@PathVariable("id") Integer id, @RequestBody Topic topic) {
-        long topicId = topicService.updateTopic(id, topic);
+    public ResponseEntity<ResultBean<Long>> updateTopic(@PathVariable("id") Integer id, @RequestBody TopicVo topicVo, Authentication authentication) {
+        SessionUser user = (SessionUser) authentication.getPrincipal();
+        long topicId = topicService.updateTopic(id, topicVo, user.getId());
 
         ResultBean<Long> response = new ResultBean<>(topicId);
         if(topicId == 0) {
@@ -80,8 +86,9 @@ public class TopicController {
     }
 
     @DeleteMapping(value="v1.0/topics/{id}", produces = "application/json")
-    public ResponseEntity<ResultBean<Boolean>> deleteTopic(@PathVariable("id") Integer id) {
-        boolean success = topicService.deleteTopic(id);
+    public ResponseEntity<ResultBean<Boolean>> deleteTopic(@PathVariable("id") Integer id, Authentication authentication) {
+        SessionUser user = (SessionUser) authentication.getPrincipal();
+        boolean success = topicService.deleteTopic(id, user.getId());
         return ResponseEntity.ok(new ResultBean<>(success));
     }
 

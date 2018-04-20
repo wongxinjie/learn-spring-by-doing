@@ -6,9 +6,7 @@ import org.springframework.data.repository.query.Param;
 
 
 public interface UserRepository extends JpaRepository<User, Long>{
-
     User findFirstByEmail(String email);
-
     Boolean existsByIdNotAndUsername(@Param("id") Long id, @Param("username") String username);
 
 }

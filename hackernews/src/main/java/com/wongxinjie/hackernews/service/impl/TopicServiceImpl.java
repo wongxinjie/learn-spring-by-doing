@@ -92,8 +92,8 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public long updateTopic(long topicId, Topic topicVo) {
-        Topic topic = topicRepository.findById(topicId).get();
+    public long updateTopic(long topicId, TopicVo topicVo, long userId) {
+        Topic topic = topicRepository.findByIdAndCreatedBy(topicId, userId);
         if(topic == null) {
             return 0;
         }
@@ -103,6 +103,7 @@ public class TopicServiceImpl implements TopicService {
         topic.setRedirect(topicVo.getRedirect());
         topic.setId(topicId);
         topicRepository.save(topic);
+
         return topicId;
     }
 
