@@ -10,4 +10,5 @@ public interface TopicRepository extends JpaRepository<Topic, Long> {
     List<Topic> findByTitle(String title);
     List<Topic> findByCreatedBy(Long userId);
     List<Topic> findByUrl(String url);
+    Topic findByIdAndCreatedBy(Long topicId, Long userId);
 }

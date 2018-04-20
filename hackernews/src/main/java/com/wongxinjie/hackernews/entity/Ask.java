@@ -1,14 +1,24 @@
 package com.wongxinjie.hackernews.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
 
+@Entity
+@Table(name = "ask")
 public class Ask implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,18 +34,20 @@ public class Ask implements Serializable {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
-    @Column(nullable = false)
-    private long createdBy;
-
     @Column(name="created_at", nullable = false, insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    public Ask(long id, String title, String content, long createdBy, Date createdAt) {
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "created_by")
+    @JsonIgnore
+    private User user;
+
+    public Ask(long id, String title, String content, Date createdAt) {
         this.id = id;
         this.title = title;
         this.content = content;
-        this.createdBy = createdBy;
         this.createdAt = createdAt;
     }
 
@@ -67,16 +79,15 @@ public class Ask implements Serializable {
         this.content = content;
     }
 
-    public long getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(long createdBy) {
-        this.createdBy = createdBy;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

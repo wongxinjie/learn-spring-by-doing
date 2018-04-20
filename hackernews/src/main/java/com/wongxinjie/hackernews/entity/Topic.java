@@ -1,11 +1,16 @@
 package com.wongxinjie.hackernews.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -32,17 +37,24 @@ public class Topic implements Serializable{
     @Column(nullable = false, length = 128)
     private String domain;
 
+    @Column(nullable = false)
+    private int redirect;
+
     @Column(name="topic_type")
     private int topicType;
-
-    @Column(name="created_by")
-    private long createdBy;
 
     @Column(name="created_at", insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    public Topic() {}
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "created_by")
+    @JsonIgnore
+    private User user;
+
+    public Topic() {
+
+    }
 
     public Topic(String title, String url, String domain) {
         this.title = title;
@@ -50,13 +62,12 @@ public class Topic implements Serializable{
         this.domain = domain;
     }
 
-    public Topic(long id, String title, String url, String domain, int topicType, long createdBy, Date createdAt) {
+    public Topic(long id, String title, String url, String domain, int topicType, Date createdAt) {
         this.id = id;
         this.title = title;
         this.url = url;
         this.domain = domain;
         this.topicType = topicType;
-        this.createdBy = createdBy;
         this.createdAt = createdAt;
     }
 
@@ -104,15 +115,23 @@ public class Topic implements Serializable{
         this.topicType = topicType;
     }
 
-    public long getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(long createdBy) {
-        this.createdBy = createdBy;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
+    }
+
+    public int getRedirect() {
+        return redirect;
+    }
+
+    public void setRedirect(int redirect) {
+        this.redirect = redirect;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

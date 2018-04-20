@@ -28,9 +28,9 @@ CREATE TABLE IF NOT EXISTS `topic`(
     `title` VARCHAR(256) NOT NULL,
     `url` VARCHAR(512) NOT NULL,
     `domain` VARCHAR(128) NOT NULL,
-    `topic_type` TINYINT NOT NULL COMMENT '0 - new, 1 - show',
+    `topic_type` TINYINT NOT NULL COMMENT '0 - news, 1 - show',
     `created_by` INT NOT NULL,
-    `redirect` TINYINT NOT NULL,
+    `redirect` TINYINT NOT NULL DEFAULT 0,
     `created_at` DATETIME NOT NULL DEFAULT current_timestamp,
     PRIMARY KEY (id),
     UNIQUE KEY `uk_url` (`url`)
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `job`(
     `title` VARCHAR(256) NOT NULL,
     `content` TEXT NOT NULL,
     `url` VARCHAR(256) NOT NULL,
-    `redirect` TINYINT NOT NULL,
+    `redirect` TINYINT NOT NULL DEFAULT 0,
     `created_by` INT NOT NULL,
     `created_at` DATETIME NOT NULL DEFAULT current_timestamp,
     PRIMARY KEY (id)

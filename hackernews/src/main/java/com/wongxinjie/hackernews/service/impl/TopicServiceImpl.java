@@ -1,17 +1,28 @@
 package com.wongxinjie.hackernews.service.impl;
 
+import com.wongxinjie.hackernews.bean.dto.TopicDto;
+import com.wongxinjie.hackernews.bean.vo.TopicVo;
+import com.wongxinjie.hackernews.common.NetworkUtils;
+import com.wongxinjie.hackernews.common.TimeUtils;
+import com.wongxinjie.hackernews.entity.User;
 import com.wongxinjie.hackernews.repository.TopicRepository;
 import com.wongxinjie.hackernews.entity.Topic;
+import com.wongxinjie.hackernews.repository.UserRepository;
 import com.wongxinjie.hackernews.service.TopicService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TopicServiceImpl implements TopicService {
@@ -21,6 +32,9 @@ public class TopicServiceImpl implements TopicService {
     @Autowired
     private TopicRepository topicRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @Override
     public List<Topic> getAllTopic() {
         List<Topic> topics = new ArrayList<>();
@@ -29,57 +43,88 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public Page<Topic> getTopicByPage(int page, int pageSize) {
-        if(page < 1) {
+    public Page<TopicDto> getTopicByPage(int page, int pageSize) {
+        if (page < 1) {
             page = 1;
         }
-        if(pageSize > 100) {
+        if (pageSize > 100) {
             pageSize = 100;
         }
         page = page - 1;
-        return topicRepository.findAll(new PageRequest(page, pageSize));
+
+        Pageable pageRequest = PageRequest.of(page, pageSize, Sort.Direction.DESC, "createdAt");
+        Page<Topic> paginator = topicRepository.findAll(pageRequest);
+
+        List<Topic> topics = paginator.getContent().stream().collect(Collectors.toList());
+        List<TopicDto> topicDtos = new ArrayList<>();
+        for (Topic t : topics) {
+            topicDtos.add(mapEntityToDto(t));
+        }
+
+        return new PageImpl<>(topicDtos, pageRequest, paginator.getTotalElements());
     }
 
     @Override
-    public Topic getTopicById(long topicId) {
+    public TopicDto getTopicById(long topicId) {
         Topic topic = topicRepository.findById(topicId).get();
-        return topic;
+        return mapEntityToDto(topic);
     }
 
     @Override
-    public long addTopic(Topic topic) {
-        List<Topic> list = topicRepository.findByUrl(topic.getUrl());
+    public long addTopic(TopicVo topicVo, Long userId, int topicType) {
+        List<Topic> list = topicRepository.findByUrl(topicVo.getUrl());
         if(list.size() > 0) {
             return 0;
         }
-        topic.setCreatedBy(1);
-        topic.setTopicType(0);
+        Optional<User> optional = userRepository.findById(userId);
+
+        Topic topic = new Topic();
+        topic.setTopicType(topicType);
+        topic.setTitle(topicVo.getTitle());
+        topic.setUrl(topicVo.getUrl());
+        topic.setUser(optional.get());
+        topic.setRedirect(topicVo.getRedirect());
+        topic.setDomain(NetworkUtils.getDomainFromUrl(topicVo.getUrl()));
         topicRepository.save(topic);
 
-        log.info("User {} create topic with url {}", 1, topic.getUrl());
+        log.info("User {} create topic with url {}", userId, topic.getUrl());
         return  topic.getId();
     }
 
     @Override
-    public long updateTopic(long topicId, Topic topic) {
-        Topic t = topicRepository.findById(topicId).get();
-        if(t == null) {
+    public long updateTopic(long topicId, Topic topicVo) {
+        Topic topic = topicRepository.findById(topicId).get();
+        if(topic == null) {
             return 0;
         }
 
+        topic.setTitle(topicVo.getTitle());
+        topic.setUrl(topicVo.getUrl());
+        topic.setRedirect(topicVo.getRedirect());
         topic.setId(topicId);
         topicRepository.save(topic);
         return topicId;
     }
 
     @Override
-    public boolean deleteTopic(long topicId) {
-        Topic topic = topicRepository.getOne(topicId);
+    public boolean deleteTopic(long topicId, long userId) {
+        Topic topic = topicRepository.findByIdAndCreatedBy(topicId, userId);
         if(topic != null) {
             topicRepository.delete(topic);
-            log.info("User {} remove topic id {}", topic.getCreatedBy(), topicId);
+            log.info("User {} remove topic id {}", userId, topicId);
             return true;
         }
         return false;
+    }
+
+    private TopicDto mapEntityToDto(Topic entity) {
+        TopicDto dto = new TopicDto();
+        dto.setTitle(entity.getTitle());
+        dto.setDomain(entity.getDomain());
+        dto.setPoints(0);
+        dto.setRedirect(entity.getRedirect());
+        dto.setWhen(TimeUtils.localTimeText(entity.getCreatedAt()));
+        dto.setPoster(entity.getUser().getUsername());
+        return dto;
     }
 }

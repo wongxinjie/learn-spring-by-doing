@@ -1,14 +1,24 @@
 package com.wongxinjie.hackernews.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.data.annotation.TypeAlias;
+
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
 
+@Entity
+@Table(name = "job")
 public class Job implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -30,20 +40,22 @@ public class Job implements Serializable {
     @Column(nullable = false)
     private int redirect;
 
-    @Column(name = "created_by", nullable = false)
-    private long createdBy;
-
     @Column(name = "created_at", insertable = false, updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
 
-    public Job(long id, String title, String content, String url, int redirect, long createdBy, Date createdAt) {
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "created_by")
+    @JsonIgnore
+    private User user;
+
+
+    public Job(long id, String title, String content, String url, int redirect, Date createdAt) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.url = url;
         this.redirect = redirect;
-        this.createdBy = createdBy;
         this.createdAt = createdAt;
     }
 
@@ -91,16 +103,15 @@ public class Job implements Serializable {
         this.redirect = redirect;
     }
 
-    public long getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(long createdBy) {
-        this.createdBy = createdBy;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
