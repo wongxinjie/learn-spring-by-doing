@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionOperations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,8 +94,14 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public long updateTopic(long topicId, TopicVo topicVo, long userId) {
-        Topic topic = topicRepository.findByIdAndCreatedBy(topicId, userId);
-        if(topic == null) {
+        Optional<Topic> optional = topicRepository.findById(topicId);
+        if (!optional.isPresent()) {
+            return 0;
+        }
+
+        Topic topic = optional.get();
+        if (topic.getUser().getId() != userId) {
+            //should raise exception
             return 0;
         }
 
@@ -109,8 +116,13 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public boolean deleteTopic(long topicId, long userId) {
-        Topic topic = topicRepository.findByIdAndCreatedBy(topicId, userId);
-        if(topic != null) {
+        Optional<Topic> optional = topicRepository.findById(topicId);
+        if (!optional.isPresent()) {
+            return false;
+        }
+
+        Topic topic = optional.get();
+        if(topic != null && topic.getUser().getId() != userId) {
             topicRepository.delete(topic);
             log.info("User {} remove topic id {}", userId, topicId);
             return true;

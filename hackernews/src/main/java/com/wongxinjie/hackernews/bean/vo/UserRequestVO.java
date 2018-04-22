@@ -1,12 +1,6 @@
 package com.wongxinjie.hackernews.bean.vo;
 
 
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-
 public class UserRequestVO {
 
     private String email;
